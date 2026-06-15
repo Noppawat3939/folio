@@ -4,7 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"folio/db"
+	"folio/database"
 	"log"
 	"net/http"
 	"os"
@@ -39,7 +39,16 @@ type Response struct {
 func main() {
 	ctx := context.Background()
 
-	_, err := db.Connect(ctx, REMOTE_URL, AUTH_TOKEN)
+	syncDb, sqlDB, err := database.Connect(ctx, REMOTE_URL, AUTH_TOKEN)
+	if err != nil {
+		log.Fatal("Failed to connect to database:", err)
+	}
+
+	if err := database.Migrate(sqlDB); err != nil {
+		log.Fatal("Failed to run migrations:", err)
+	}
+
+	syncDb.Push(ctx)
 
 	// Define a route handler
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
@@ -56,7 +65,7 @@ func main() {
 		}
 
 		data := Response{ServerConnected: true, DatabaseConnected: err == nil, Message: msg}
-		fmt.Println(data)
+
 		json.NewEncoder(w).Encode(data) // Efficient streaming
 	})
 
