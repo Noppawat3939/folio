@@ -1,1 +1,7 @@
 .env*
+
+# Turso embedded replica (auto-generated, do not commit)
+backend/app.db
+backend/app.db-wal
+backend/app.db-changes
+backend/app.db-info

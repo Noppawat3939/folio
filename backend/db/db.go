@@ -8,23 +8,21 @@ import (
 )
 
 func Connect(ctx context.Context, remoteUrl, authToken string) (*turso.TursoSyncDb, error) {
-	syncDb, _ := turso.NewTursoSyncDb(ctx, turso.TursoSyncDbConfig{
+	syncDb, err := turso.NewTursoSyncDb(ctx, turso.TursoSyncDbConfig{
 		Path:      "app.db",
 		RemoteUrl: remoteUrl,
 		AuthToken: authToken,
 	})
-
-	db, err := syncDb.Connect(ctx)
 	if err != nil {
 		return nil, err
 	}
 
-	defer db.Close()
+	_, err = syncDb.Connect(ctx)
+	if err != nil {
+		return nil, err
+	}
 
-	// Push local writes to Turso Cloud
 	syncDb.Push(ctx)
-
-	// Pull remote changes to local database
 	syncDb.Pull(ctx)
 
 	log.Println("Database is connected")

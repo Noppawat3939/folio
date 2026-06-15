@@ -41,7 +41,7 @@ func main() {
 
 	_, err := db.Connect(ctx, REMOTE_URL, AUTH_TOKEN)
 
-	// 1. Define a route handler
+	// Define a route handler
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "Hello, World!")
 	})
@@ -60,7 +60,7 @@ func main() {
 		json.NewEncoder(w).Encode(data) // Efficient streaming
 	})
 
-	// 2. Start the server on port 8080
+	// Start the server on port 8080
 	fmt.Printf("Server is running on http://localhost:%s", PORT)
 	log.Fatal(http.ListenAndServe(":"+PORT, nil))
 }
