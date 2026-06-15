@@ -1,15 +1,17 @@
 # folio
 
-Personal investment tracker — stocks and cash portfolio with Google Sheets as the database.
+Personal monthly investment tracker — บันทึกรายการลงทุนรายเดือน (เงินสำรอง, หุ้น, กองทุน, ประกัน) ดูข้อมูลแบบรายเดือน/รายปีได้ ไม่มี real-time price หรือ P&L
 
 ## Stack
 
-| Layer    | Technology                |
-| -------- | ------------------------- |
-| Frontend | React + Vite (TypeScript) |
-| Backend  | Go                        |
-| Database | Google Sheets API         |
-| Deploy   | Render                    |
+| Layer            | Technology              |
+| ---------------- | ----------------------- |
+| Frontend         | React + Vite (TypeScript) |
+| Backend          | Go                      |
+| Database         | Turso (LibSQL / SQLite) |
+| Repository       | Monorepo                |
+| Deploy           | Render                  |
+| Primary currency | THB                     |
 
 ## Project Structure
 
@@ -21,14 +23,19 @@ folio/
 │   │   ├── handler/
 │   │   ├── service/
 │   │   ├── repository/
-│   │   ├── model/
-│   │   └── price/
+│   │   └── model/
 │   ├── config/
-│   └── Dockerfile
+│   ├── .env.example
+│   ├── Dockerfile
+│   └── go.mod
 ├── frontend/
 │   ├── src/
-│   └── Dockerfile
+│   ├── public/
+│   ├── package.json
+│   ├── tsconfig.json
+│   └── vite.config.ts
 ├── docker-compose.yml
+├── .gitignore
 └── README.md
 ```
 
@@ -38,7 +45,20 @@ folio/
 
 - Go 1.22+
 - Node.js 22+
-- Google Sheets API credentials
+- Turso account + CLI ([turso.tech](https://turso.tech))
+
+### Environment Variables
+
+```bash
+# backend/.env
+API_TOKEN=your_static_token
+TURSO_DATABASE_URL=libsql://...
+TURSO_AUTH_TOKEN=...
+
+# frontend/.env
+VITE_API_TOKEN=your_static_token
+VITE_API_BASE_URL=http://localhost:8080
+```
 
 ### Run locally
 
@@ -53,6 +73,23 @@ cd frontend
 npm install
 npm run dev
 ```
+
+## Authentication
+
+ใช้ Static Bearer Token — single user, ไม่มี login UI
+
+```
+Authorization: Bearer <token>
+```
+
+`GET /health` เป็น public endpoint (ใช้กับ UptimeRobot เพื่อป้องกัน Render cold start)
+
+## Key Design Decisions
+
+- `amount` เก็บเป็น **satang** (INTEGER) — 35,000 THB = 3,500,000 satang
+- `period` เก็บเป็น **YYYY-MM-01** (TEXT) — วันแรกของเดือน
+- `type` เป็น **free-text** — ไม่ใช่ enum, ค่า default แสดงเป็น quick-select ใน UI
+- Soft delete ผ่าน `deleted_at` — กู้คืนได้
 
 ## License
 
