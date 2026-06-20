@@ -21,7 +21,26 @@ func (r *EntryRepository) GetByPeriod(ctx context.Context, period string) ([]mod
 
 // GetByID returns a single active entry by ID
 func (r *EntryRepository) GetByID(ctx context.Context, id string) (*model.Entry, error) {
-	panic("not implemented")
+	query := "SELECT id, name, type, amount, period, note, deleted_at, created_at, updated_at FROM entries WHERE id = ?"
+
+	var data model.Entry
+
+	err := r.db.QueryRowContext(ctx, query, id).
+		Scan(&data.ID,
+			&data.Name,
+			&data.Type,
+			&data.Amount,
+			&data.Period,
+			&data.Note,
+			&data.DeletedAt,
+			&data.CreatedAt,
+			&data.UpdatedAt)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &data, nil
 }
 
 // Create inserts a new entry and returns the created record
