@@ -1,37 +1,24 @@
 @import "tailwindcss";
 
-@keyframes modal-overlay-in {
-  from { opacity: 0; }
-  to   { opacity: 1; }
+@theme {
+  --font-sans: 'Noto Sans Thai', system-ui, sans-serif;
 }
 
-@keyframes modal-panel-in {
-  from { opacity: 0; transform: scale(0.95) translateY(4px); }
-  to   { opacity: 1; transform: scale(1)    translateY(0);   }
-}
-
-.animate-modal-overlay {
-  animation: modal-overlay-in 150ms ease-out forwards;
-}
-
-.animate-modal-panel {
-  animation: modal-panel-in 180ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+@utility no-scrollbar {
+  scrollbar-width: none;
+  &::-webkit-scrollbar { display: none; }
 }
 
 @layer base {
-  :root {
-    color-scheme: light;
-  }
+  :root { color-scheme: dark; }
 
   body {
     margin: 0;
-    font-family: system-ui, 'Segoe UI', Roboto, sans-serif;
+    background: #0d0f17;
+    font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    background: #f9fafb;
   }
 
-  #root {
-    min-height: 100svh;
-  }
+  #root { min-height: 100svh; }
 }
