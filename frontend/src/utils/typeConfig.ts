@@ -1,6 +1,6 @@
 export const TYPE_CFG: Record<string, { bg: string; text: string; accent: string }> = {
-  'หุ้น':                        { bg: 'bg-blue-500/15',    text: 'text-blue-400',    accent: '#60a5fa' },
-  'กองทุน':                      { bg: 'bg-violet-500/15',  text: 'text-violet-400',  accent: '#a78bfa' },
+  'หุ้น':                        { bg: 'bg-[#BFC9D1]/15',   text: 'text-[#BFC9D1]',   accent: '#BFC9D1' },
+  'กองทุน':                      { bg: 'bg-[#9BB4C0]/15',   text: 'text-[#9BB4C0]',   accent: '#9BB4C0' },
   'ประกัน':                      { bg: 'bg-amber-500/15',   text: 'text-amber-400',   accent: '#fbbf24' },
   'เงินสำรองฉุกเฉินส่วนตัว':     { bg: 'bg-emerald-500/15', text: 'text-emerald-400', accent: '#34d399' },
   'เงินสำรองฉุกเฉินกับแฟน':     { bg: 'bg-teal-500/15',    text: 'text-teal-400',    accent: '#2dd4bf' },
@@ -17,7 +17,7 @@ const SPARK_DATA: Record<string, number[]> = {
 }
 
 export function tcfg(type: string) {
-  return TYPE_CFG[type] ?? { bg: 'bg-indigo-500/15', text: 'text-indigo-400', accent: '#818cf8' }
+  return TYPE_CFG[type] ?? { bg: 'bg-[#8FA8B8]/15', text: 'text-[#8FA8B8]', accent: '#8FA8B8' }
 }
 
 export function spark(type: string) {

@@ -6,6 +6,7 @@ import { tcfg, abbr } from "~/utils/typeConfig";
 import EntryModal from "~/components/EntryModal";
 import ConfirmDeleteModal from "~/components/ConfirmDeleteModal";
 import { PortfolioIcon, AnalyticsIcon } from "~/components/NavIcons";
+import MonthPicker from "~/components/MonthPicker";
 
 type View = "monthly" | "yearly";
 type ModalState = null | "add" | Entry;
@@ -114,15 +115,10 @@ export default function App() {
             </h1>
           </div>
           <div className="flex items-center gap-2">
-            <input
-              type="month"
-              value={period}
-              onChange={(e) => setPeriod(e.target.value)}
-              className="bg-[#161928] border border-[#242740] text-[#8082a0] text-xs rounded-xl px-3 py-2 focus:outline-none focus:border-[#3d4470] w-32"
-            />
+            <MonthPicker value={period} onChange={setPeriod} />
             <button
               onClick={() => setModal("add")}
-              className="w-9 h-9 bg-[#3b5bdb] hover:bg-[#4263eb] active:bg-[#2f4cbf] rounded-xl flex items-center justify-center text-white font-bold text-xl leading-none"
+              className="w-9 h-9 bg-linear-to-br from-[#9BB4C0] to-[#BFC9D1] hover:from-[#AABFCA] hover:to-[#CDD7DC] active:from-[#8AA3B0] active:to-[#B0BEC8] rounded-xl flex items-center justify-center text-[#0d0f17] font-bold text-xl leading-none"
             >
               +
             </button>
@@ -141,7 +137,7 @@ export default function App() {
         {view === "monthly" ? (
           <>
             {/* Portfolio card */}
-            <div className="bg-linear-to-br from-[#1b2045] to-[#121628] rounded-3xl p-5 border border-[#252840]">
+            <div className="bg-linear-to-br from-[#141e24] to-[#0f161c] rounded-3xl p-5 border border-[#1d2830]">
               <p className="text-[#5e6180] text-[10px] font-semibold uppercase tracking-widest mb-3">
                 พอร์ตลงทุน · {period}
               </p>
@@ -288,7 +284,7 @@ export default function App() {
                           <div className="flex items-center gap-1.5 justify-end mt-1">
                             <button
                               onClick={() => setModal(e)}
-                              className="text-[10px] text-[#404360] hover:text-blue-400"
+                              className="text-[10px] text-[#404360] hover:text-[#BFC9D1]"
                             >
                               Edit
                             </button>
@@ -338,19 +334,19 @@ export default function App() {
                         }}
                       >
                         {on && (
-                          <span className="text-[9px] text-[#4f72ff] font-mono leading-none mb-0.5">
+                          <span className="text-[9px] text-[#BFC9D1] font-mono leading-none mb-0.5">
                             {fmt(s.total)}
                           </span>
                         )}
                         <div
-                          className={`w-full rounded-xs ${on ? "bg-[#4f72ff]" : "bg-[#1e2240] hover:bg-[#272d52]"}`}
+                          className={`w-full rounded-xs ${on ? "bg-linear-to-t from-[#9BB4C0] to-[#BFC9D1]" : "bg-[#1e2240] hover:bg-[#252d35]"}`}
                           style={{
                             height: `${Math.max((s.total / maxBar) * 100, 5)}%`,
                           }}
                           title={`${s.period.slice(0, 7)}: ฿${fmt(s.total)}`}
                         />
                         <span
-                          className={`text-[9px] ${on ? "text-[#4f72ff]" : "text-[#333657]"}`}
+                          className={`text-[9px] ${on ? "text-[#BFC9D1]" : "text-[#333657]"}`}
                         >
                           {s.period.slice(5, 7)}
                         </span>
@@ -377,7 +373,7 @@ export default function App() {
                       <div
                         key={s.period}
                         className={`px-5 py-3.5 flex items-center justify-between cursor-pointer ${
-                          on ? "bg-[#1b2045]" : "hover:bg-[#161928]"
+                          on ? "bg-[#141e24]" : "hover:bg-[#141a1e]"
                         }`}
                         onClick={() => {
                           setPeriod(s.period.slice(0, 7));
@@ -386,7 +382,7 @@ export default function App() {
                       >
                         <div className="flex items-center gap-3">
                           <div
-                            className={`w-1.5 h-1.5 rounded-full ${on ? "bg-[#4f72ff]" : "bg-[#252840]"}`}
+                            className={`w-1.5 h-1.5 rounded-full ${on ? "bg-[#BFC9D1]" : "bg-[#252840]"}`}
                           />
                           <span
                             className={`text-sm ${on ? "text-white font-semibold" : "text-[#6b6e8e]"}`}
@@ -431,7 +427,7 @@ export default function App() {
               key={id}
               onClick={() => setView(id)}
               className={`flex-1 flex flex-col items-center gap-1.5 pt-3 pb-6 text-xs font-medium ${
-                view === id ? "text-[#4f72ff]" : "text-[#35395a]"
+                view === id ? "text-[#BFC9D1]" : "text-[#35395a]"
               }`}
             >
               <Icon on={view === id} />

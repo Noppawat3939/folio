@@ -2,6 +2,7 @@ import { useState, type FormEvent } from 'react'
 import { Drawer } from 'vaul'
 import type { Entry } from '~/types'
 import { api, QUICK_TYPES } from '~/services/api'
+import MonthPicker from '~/components/MonthPicker'
 import { useIsMobile } from '~/hooks/useIsMobile'
 
 interface Props {
@@ -51,7 +52,7 @@ function FormContent({ period, entry, onClose, onSuccess, autoFocus }: Props & {
     }
   }
 
-  const inputCls = 'w-full bg-[#0d0f17] border border-[#252840] text-white rounded-xl px-3 py-2.5 text-sm placeholder:text-[#3a3e5a] focus:outline-none focus:border-[#4f72ff]'
+  const inputCls = 'w-full bg-[#0d0f17] border border-[#252840] text-white rounded-xl px-3 py-2.5 text-sm placeholder:text-[#3a3e5a] focus:outline-none focus:border-[#BFC9D1]'
   const labelCls = 'block text-[11px] font-semibold text-[#5e6180] uppercase tracking-wider mb-2'
 
   return (
@@ -82,8 +83,8 @@ function FormContent({ period, entry, onClose, onSuccess, autoFocus }: Props & {
                 onClick={() => setForm(f => ({ ...f, type: t }))}
                 className={`px-3 py-1 rounded-xl text-xs font-medium border ${
                   form.type === t
-                    ? 'bg-[#4f72ff] border-[#4f72ff] text-white'
-                    : 'border-[#252840] text-[#6b6e8e] bg-transparent hover:border-[#4f72ff]/50'
+                    ? 'bg-linear-to-br from-[#9BB4C0] to-[#BFC9D1] border-transparent text-[#0d0f17]'
+                    : 'border-[#252840] text-[#6b6e8e] bg-transparent hover:border-[#BFC9D1]/50'
                 }`}
               >
                 {t}
@@ -132,11 +133,9 @@ function FormContent({ period, entry, onClose, onSuccess, autoFocus }: Props & {
         {/* Period */}
         <div>
           <label className={labelCls}>เดือน</label>
-          <input
-            type="month"
+          <MonthPicker
             value={form.period}
-            onChange={e => setForm(f => ({ ...f, period: e.target.value }))}
-            className={inputCls}
+            onChange={v => setForm(f => ({ ...f, period: v }))}
           />
         </div>
 
@@ -172,7 +171,7 @@ function FormContent({ period, entry, onClose, onSuccess, autoFocus }: Props & {
           <button
             type="submit"
             disabled={submitting}
-            className="flex-1 bg-[#4f72ff] hover:bg-[#5c7dff] active:bg-[#3f5edb] disabled:opacity-40 text-white py-3 rounded-xl text-sm font-semibold"
+            className="flex-1 bg-linear-to-br from-[#9BB4C0] to-[#BFC9D1] hover:from-[#AABFCA] hover:to-[#CDD7DC] active:from-[#8AA3B0] active:to-[#B0BEC8] disabled:opacity-40 text-[#0d0f17] py-3 rounded-xl text-sm font-semibold"
           >
             {submitting ? 'Saving…' : isEdit ? 'Update' : 'Save'}
           </button>

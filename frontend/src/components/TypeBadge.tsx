@@ -1,6 +1,6 @@
 const TYPE_COLORS: Record<string, string> = {
-  'หุ้น':                        'bg-blue-500/15 text-blue-400',
-  'กองทุน':                      'bg-violet-500/15 text-violet-400',
+  'หุ้น':                        'bg-[#BFC9D1]/15 text-[#BFC9D1]',
+  'กองทุน':                      'bg-[#9BB4C0]/15 text-[#9BB4C0]',
   'ประกัน':                      'bg-amber-500/15 text-amber-400',
   'เงินสำรองฉุกเฉินส่วนตัว':     'bg-emerald-500/15 text-emerald-400',
   'เงินสำรองฉุกเฉินกับแฟน':     'bg-teal-500/15 text-teal-400',
@@ -8,7 +8,7 @@ const TYPE_COLORS: Record<string, string> = {
 }
 
 export function typeColor(type: string) {
-  return TYPE_COLORS[type] ?? 'bg-indigo-500/15 text-indigo-400'
+  return TYPE_COLORS[type] ?? 'bg-[#8FA8B8]/15 text-[#8FA8B8]'
 }
 
 export default function TypeBadge({ type }: { type: string }) {
