@@ -5,6 +5,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"folio/database"
+	"folio/internal/handler"
+	"folio/internal/repository"
+	"folio/internal/service"
 	"log"
 	"net/http"
 	"os"
@@ -16,10 +19,10 @@ var (
 	PORT       string
 	REMOTE_URL string
 	AUTH_TOKEN string
+	API_TOKEN  string
 )
 
 func init() {
-	// load configs
 	err := godotenv.Load(".env.staging", ".env")
 	if err != nil {
 		log.Fatal("Error loading .env file")
@@ -28,13 +31,15 @@ func init() {
 	PORT = os.Getenv("PORT")
 	REMOTE_URL = os.Getenv("TURSO_DATABASE_URL")
 	AUTH_TOKEN = os.Getenv("TURSO_AUTH_TOKEN")
+	API_TOKEN = os.Getenv("API_TOKEN")
 }
 
-type Response struct {
+type healthResponse struct {
 	ServerConnected   bool   `json:"server_connected"`
 	DatabaseConnected bool   `json:"database_connected"`
 	Message           string `json:"message"`
 }
+
 
 func main() {
 	ctx := context.Background()
@@ -50,26 +55,32 @@ func main() {
 
 	syncDb.Push(ctx)
 
-	// Define a route handler
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+	// Wire dependencies
+	entryRepo := repository.NewEntryRepository(sqlDB)
+	entryService := service.NewEntryService(entryRepo)
+	entryHandler := handler.NewEntryHandler(entryService)
+
+	mux := http.NewServeMux()
+
+	mux.HandleFunc("GET /{$}", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "Hello, World!")
 	})
 
-	http.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Content-Type", "application/json") // Must be set first
-
-		dbConnectFailed := err != nil
-		var msg string = "Server and Database already connections"
-		if dbConnectFailed {
+	mux.HandleFunc("GET /health", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		msg := "Server and Database already connections"
+		if err != nil {
 			msg = "Database connection failed"
 		}
-
-		data := Response{ServerConnected: true, DatabaseConnected: err == nil, Message: msg}
-
-		json.NewEncoder(w).Encode(data) // Efficient streaming
+		json.NewEncoder(w).Encode(healthResponse{
+			ServerConnected:   true,
+			DatabaseConnected: err == nil,
+			Message:           msg,
+		})
 	})
 
-	// Start the server on port 8080
-	fmt.Printf("Server is running on http://localhost:%s", PORT)
-	log.Fatal(http.ListenAndServe(":"+PORT, nil))
+	handler.RegisterRoutes(mux, entryHandler, API_TOKEN)
+
+	fmt.Printf("Server is running on http://localhost:%s\n", PORT)
+	log.Fatal(http.ListenAndServe(":"+PORT, mux))
 }
