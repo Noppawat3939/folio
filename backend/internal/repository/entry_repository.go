@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"folio/internal/model"
+	"strings"
 	"time"
 )
 
@@ -41,7 +42,7 @@ func (r *EntryRepository) GetByPeriod(ctx context.Context, period string) ([]mod
 
 // GetByID returns a single active entry by ID
 func (r *EntryRepository) GetByID(ctx context.Context, id string) (*model.Entry, error) {
-	query := "SELECT id, name, type, amount, period, note, deleted_at, created_at, updated_at FROM entries WHERE id = ?"
+	query := "SELECT id, name, type, amount, period, note, deleted_at, created_at, updated_at FROM entries WHERE id = ? AND deleted_at IS NULL"
 
 	var data model.Entry
 
@@ -97,7 +98,7 @@ func (r *EntryRepository) Update(ctx context.Context, id string, entry model.Ent
 
 	entry.UpdatedAt = time.Now()
 
-	_, err := r.db.ExecContext(ctx, query,
+	result, err := r.db.ExecContext(ctx, query,
 		entry.Name,
 		entry.Type,
 		entry.Amount,
@@ -109,6 +110,13 @@ func (r *EntryRepository) Update(ctx context.Context, id string, entry model.Ent
 	if err != nil {
 		return nil, err
 	}
+	n, err := result.RowsAffected()
+	if err != nil {
+		return nil, err
+	}
+	if n == 0 {
+		return nil, sql.ErrNoRows
+	}
 
 	entry.ID = id
 	return &entry, nil
@@ -118,8 +126,68 @@ func (r *EntryRepository) Update(ctx context.Context, id string, entry model.Ent
 func (r *EntryRepository) Delete(ctx context.Context, id string) error {
 	query := `UPDATE entries SET deleted_at = ? WHERE id = ? AND deleted_at IS NULL`
 
-	_, err := r.db.ExecContext(ctx, query, time.Now(), id)
-	return err
+	result, err := r.db.ExecContext(ctx, query, time.Now(), id)
+	if err != nil {
+		return err
+	}
+	n, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+	if n == 0 {
+		return sql.ErrNoRows
+	}
+	return nil
+}
+
+// Patch updates only the provided fields of an existing entry
+func (r *EntryRepository) Patch(ctx context.Context, id string, patch model.PatchEntry) (*model.Entry, error) {
+	var setClauses []string
+	var args []any
+
+	if patch.Name != nil {
+		setClauses = append(setClauses, "name = ?")
+		args = append(args, *patch.Name)
+	}
+	if patch.Type != nil {
+		setClauses = append(setClauses, "type = ?")
+		args = append(args, *patch.Type)
+	}
+	if patch.Amount != nil {
+		setClauses = append(setClauses, "amount = ?")
+		args = append(args, *patch.Amount)
+	}
+	if patch.Period != nil {
+		setClauses = append(setClauses, "period = ?")
+		args = append(args, *patch.Period)
+	}
+	if patch.Note != nil {
+		setClauses = append(setClauses, "note = ?")
+		args = append(args, *patch.Note)
+	}
+
+	if len(setClauses) == 0 {
+		return r.GetByID(ctx, id)
+	}
+
+	setClauses = append(setClauses, "updated_at = ?")
+	args = append(args, time.Now())
+	args = append(args, id)
+
+	query := "UPDATE entries SET " + strings.Join(setClauses, ", ") + " WHERE id = ? AND deleted_at IS NULL"
+
+	result, err := r.db.ExecContext(ctx, query, args...)
+	if err != nil {
+		return nil, err
+	}
+	n, err := result.RowsAffected()
+	if err != nil {
+		return nil, err
+	}
+	if n == 0 {
+		return nil, sql.ErrNoRows
+	}
+	return r.GetByID(ctx, id)
 }
 
 // GetByYear returns all active entries for a given year (YYYY)

@@ -9,17 +9,20 @@ import (
 )
 
 func RegisterRoutes(mux *http.ServeMux, h *EntryHandler, apiToken string) {
-	entryCache := cache.New[string, []byte](30 * time.Minute)
+	entryCache := cache.New[string, []byte](1 * time.Hour)
+	summaryCache := cache.New[string, []byte](1 * time.Hour)
+	rl := newRateLimiter(20, 1*time.Minute)
 
 	api := http.NewServeMux()
 	api.HandleFunc("GET /api/entries", h.GetByPeriod)
 	api.HandleFunc("GET /api/entries/yearly", h.GetByYear)
 	api.HandleFunc("GET /api/entries/{id}", cacheGet(entryCache, h.GetByID))
-	api.HandleFunc("POST /api/entries", h.Create)
-	api.HandleFunc("PUT /api/entries/{id}", invalidateEntry(entryCache, h.Update))
-	api.HandleFunc("DELETE /api/entries/{id}", invalidateEntry(entryCache, h.Delete))
-	api.HandleFunc("GET /api/summary/monthly", h.GetMonthlySummary)
-	api.HandleFunc("GET /api/summary/yearly", h.GetYearlySummary)
+	api.HandleFunc("POST /api/entries", rl.middleware(invalidateSummary(summaryCache, h.Create)))
+	api.HandleFunc("PATCH /api/entries/{id}", rl.middleware(invalidateEntry(entryCache, invalidateSummary(summaryCache, h.Patch))))
+	api.HandleFunc("PUT /api/entries/{id}", rl.middleware(invalidateEntry(entryCache, invalidateSummary(summaryCache, h.Update))))
+	api.HandleFunc("DELETE /api/entries/{id}", rl.middleware(invalidateEntry(entryCache, invalidateSummary(summaryCache, h.Delete))))
+	api.HandleFunc("GET /api/summary/monthly", cacheGetWithQuery(summaryCache, h.GetMonthlySummary))
+	api.HandleFunc("GET /api/summary/yearly", cacheGetWithQuery(summaryCache, h.GetYearlySummary))
 
 	mux.Handle("/api/", authMiddleware(apiToken, api))
 }
@@ -58,8 +61,37 @@ func cacheGet(c *cache.Cache[string, []byte], next http.HandlerFunc) http.Handle
 
 func invalidateEntry(c *cache.Cache[string, []byte], next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		next(w, r)
-		c.Delete("/api/entries/" + r.PathValue("id"))
+		rec := &responseRecorder{ResponseWriter: w, status: http.StatusOK, body: &bytes.Buffer{}}
+		next(rec, r)
+		if rec.status < 300 {
+			c.Delete("/api/entries/" + r.PathValue("id"))
+		}
+	}
+}
+
+func invalidateSummary(c *cache.Cache[string, []byte], next http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		rec := &responseRecorder{ResponseWriter: w, status: http.StatusOK, body: &bytes.Buffer{}}
+		next(rec, r)
+		if rec.status < 300 {
+			c.Flush()
+		}
+	}
+}
+
+func cacheGetWithQuery(c *cache.Cache[string, []byte], next http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		key := r.URL.RequestURI()
+		if data, ok := c.Get(key); ok {
+			w.Header().Set("Content-Type", "application/json")
+			w.Write(data)
+			return
+		}
+		rec := &responseRecorder{ResponseWriter: w, status: http.StatusOK, body: &bytes.Buffer{}}
+		next(rec, r)
+		if rec.status < 300 {
+			c.Set(key, rec.body.Bytes())
+		}
 	}
 }
 

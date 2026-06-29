@@ -14,6 +14,14 @@ type Entry struct {
 	UpdatedAt time.Time  `json:"updated_at"`
 }
 
+type PatchEntry struct {
+	Name   *string `json:"name"`
+	Type   *string `json:"type"`
+	Amount *int64  `json:"amount"`
+	Period *string `json:"period"`
+	Note   *string `json:"note"`
+}
+
 // MonthlySummary represents total amount per type for a given month
 type MonthlySummary struct {
 	Type   string `json:"type"`

@@ -55,6 +55,25 @@ func (s *EntryService) Update(ctx context.Context, id string, entry model.Entry)
 	return s.repo.Update(ctx, id, entry)
 }
 
+// Patch updates only the provided fields of an existing entry
+func (s *EntryService) Patch(ctx context.Context, id string, patch model.PatchEntry) (*model.Entry, error) {
+	if id == "" {
+		return nil, errors.New("id is required")
+	}
+	if patch.Type != nil && *patch.Type == "" {
+		return nil, errors.New("type cannot be empty")
+	}
+	if patch.Amount != nil && *patch.Amount <= 0 {
+		return nil, errors.New("amount must be greater than 0")
+	}
+	if patch.Period != nil {
+		if err := validatePeriod(*patch.Period); err != nil {
+			return nil, err
+		}
+	}
+	return s.repo.Patch(ctx, id, patch)
+}
+
 // Delete soft-deletes an entry by ID
 func (s *EntryService) Delete(ctx context.Context, id string) error {
 	if id == "" {

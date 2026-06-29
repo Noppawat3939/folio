@@ -28,7 +28,16 @@ func (c *Cache[K, V]) Get(key K) (V, bool) {
 	e, ok := c.data[key]
 	c.mu.RUnlock()
 
-	if !ok || time.Now().After(e.expiresAt) {
+	if !ok {
+		var zero V
+		return zero, false
+	}
+	if time.Now().After(e.expiresAt) {
+		c.mu.Lock()
+		if e2, still := c.data[key]; still && time.Now().After(e2.expiresAt) {
+			delete(c.data, key)
+		}
+		c.mu.Unlock()
 		var zero V
 		return zero, false
 	}

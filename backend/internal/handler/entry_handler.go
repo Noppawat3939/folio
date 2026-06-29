@@ -104,6 +104,27 @@ func (h *EntryHandler) Update(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, http.StatusOK, updated)
 }
 
+// PATCH /api/entries/{id}
+// Updates only the provided fields of an existing entry
+func (h *EntryHandler) Patch(w http.ResponseWriter, r *http.Request) {
+	id := r.PathValue("id")
+	var patch model.PatchEntry
+	if err := json.NewDecoder(r.Body).Decode(&patch); err != nil {
+		writeError(w, http.StatusBadRequest, "invalid request body")
+		return
+	}
+	updated, err := h.service.Patch(r.Context(), id, patch)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			writeError(w, http.StatusNotFound, "entry not found")
+			return
+		}
+		writeError(w, http.StatusBadRequest, err.Error())
+		return
+	}
+	writeJSON(w, http.StatusOK, updated)
+}
+
 // DELETE /api/entries/{id}
 // Soft-deletes an entry by setting deleted_at (recoverable)
 func (h *EntryHandler) Delete(w http.ResponseWriter, r *http.Request) {

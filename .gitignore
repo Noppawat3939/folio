@@ -5,3 +5,5 @@ backend/app.db
 backend/app.db-wal
 backend/app.db-changes
 backend/app.db-info
+backend/app.db-wal-revert
+frontend/package-lock.json
