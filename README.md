@@ -2,6 +2,8 @@
 
 Personal monthly investment tracker — บันทึกรายการลงทุนรายเดือน (เงินสำรอง, หุ้น, กองทุน, ประกัน) ดูข้อมูลแบบรายเดือน/รายปีได้ ไม่มี real-time price หรือ P&L
 
+**Demo:** [folio-five-mu.vercel.app](https://folio-five-mu.vercel.app)
+
 ## Stack
 
 | Layer            | Technology              |
