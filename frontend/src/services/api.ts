@@ -1,7 +1,7 @@
 import type { Entry, MonthlySummary, YearlySummary } from '~/types'
 
 const API_TOKEN = import.meta.env.VITE_API_TOKEN ?? ''
-const API_BASE = import.meta.env.VITE_API_BASE ?? 'http://localhost:8080'
+const API_BASE = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8080'
 
 const authHeader = () => ({ Authorization: `Bearer ${API_TOKEN}` })
 
