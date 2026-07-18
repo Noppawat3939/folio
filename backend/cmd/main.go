@@ -23,10 +23,8 @@ var (
 )
 
 func init() {
-	err := godotenv.Load(".env.staging", ".env")
-	if err != nil {
-		log.Fatal("Error loading .env file")
-	}
+	// .env files are optional — on production, env vars are set by the host
+	_ = godotenv.Load(".env.staging", ".env")
 
 	PORT = os.Getenv("PORT")
 	REMOTE_URL = os.Getenv("TURSO_DATABASE_URL")
