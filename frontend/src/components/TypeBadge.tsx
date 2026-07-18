@@ -1,6 +1,6 @@
 const TYPE_COLORS: Record<string, string> = {
-  'หุ้น':                        'bg-[#BFC9D1]/15 text-[#BFC9D1]',
-  'กองทุน':                      'bg-[#9BB4C0]/15 text-[#9BB4C0]',
+  'หุ้น':                        'bg-[#8494FF]/15 text-[#8494FF]',
+  'กองทุน':                      'bg-[#6367FF]/15 text-[#6367FF]',
   'ประกัน':                      'bg-amber-500/15 text-amber-400',
   'เงินสำรองฉุกเฉินส่วนตัว':     'bg-emerald-500/15 text-emerald-400',
   'เงินสำรองฉุกเฉินกับแฟน':     'bg-teal-500/15 text-teal-400',

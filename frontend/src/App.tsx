@@ -3,6 +3,8 @@ import type { Entry, FetchedData } from "~/types";
 import { api } from "~/services/api";
 import { fmt, currentPeriod } from "~/utils/format";
 import { tcfg, abbr } from "~/utils/typeConfig";
+import { isUnlocked } from "~/utils/pin";
+import PinGate from "~/components/PinGate";
 import EntryModal from "~/components/EntryModal";
 import ConfirmDeleteModal from "~/components/ConfirmDeleteModal";
 import { PortfolioIcon, AnalyticsIcon } from "~/components/NavIcons";
@@ -19,6 +21,7 @@ function greet() {
 }
 
 export default function App() {
+  const [unlocked, setUnlocked] = useState(isUnlocked);
   const [view, setView] = useState<View>("monthly");
   const [period, setPeriod] = useState(currentPeriod);
   const [data, setData] = useState<FetchedData>({
@@ -103,6 +106,10 @@ export default function App() {
     });
   }, [monthly, total]);
 
+  if (!unlocked) {
+    return <PinGate onUnlocked={() => setUnlocked(true)} />;
+  }
+
   return (
     <div className="min-h-screen bg-[#0d0f17] text-white pb-28 select-none">
       {/* ─── Header ─────────────────────────────────────── */}
@@ -118,7 +125,7 @@ export default function App() {
             <MonthPicker value={period} onChange={setPeriod} />
             <button
               onClick={() => setModal("add")}
-              className="w-9 h-9 bg-linear-to-br from-[#9BB4C0] to-[#BFC9D1] hover:from-[#AABFCA] hover:to-[#CDD7DC] active:from-[#8AA3B0] active:to-[#B0BEC8] rounded-xl flex items-center justify-center text-[#0d0f17] font-bold text-xl leading-none"
+              className="w-9 h-9 bg-linear-to-br from-[#6367FF] to-[#8494FF] hover:from-[#7476FF] hover:to-[#96A4FF] active:from-[#5254E8] active:to-[#7282E8] rounded-xl flex items-center justify-center text-white font-bold text-xl leading-none"
             >
               +
             </button>
@@ -284,7 +291,7 @@ export default function App() {
                           <div className="flex items-center gap-1.5 justify-end mt-1">
                             <button
                               onClick={() => setModal(e)}
-                              className="text-[10px] text-[#404360] hover:text-[#BFC9D1]"
+                              className="text-[10px] text-[#404360] hover:text-[#8494FF]"
                             >
                               Edit
                             </button>
@@ -334,19 +341,19 @@ export default function App() {
                         }}
                       >
                         {on && (
-                          <span className="text-[9px] text-[#BFC9D1] font-mono leading-none mb-0.5">
+                          <span className="text-[9px] text-[#8494FF] font-mono leading-none mb-0.5">
                             {fmt(s.total)}
                           </span>
                         )}
                         <div
-                          className={`w-full rounded-xs ${on ? "bg-linear-to-t from-[#9BB4C0] to-[#BFC9D1]" : "bg-[#1e2240] hover:bg-[#252d35]"}`}
+                          className={`w-full rounded-xs ${on ? "bg-linear-to-t from-[#6367FF] to-[#8494FF]" : "bg-[#1e2240] hover:bg-[#252d35]"}`}
                           style={{
                             height: `${Math.max((s.total / maxBar) * 100, 5)}%`,
                           }}
                           title={`${s.period.slice(0, 7)}: ฿${fmt(s.total)}`}
                         />
                         <span
-                          className={`text-[9px] ${on ? "text-[#BFC9D1]" : "text-[#333657]"}`}
+                          className={`text-[9px] ${on ? "text-[#8494FF]" : "text-[#333657]"}`}
                         >
                           {s.period.slice(5, 7)}
                         </span>
@@ -382,7 +389,7 @@ export default function App() {
                       >
                         <div className="flex items-center gap-3">
                           <div
-                            className={`w-1.5 h-1.5 rounded-full ${on ? "bg-[#BFC9D1]" : "bg-[#252840]"}`}
+                            className={`w-1.5 h-1.5 rounded-full ${on ? "bg-[#8494FF]" : "bg-[#252840]"}`}
                           />
                           <span
                             className={`text-sm ${on ? "text-white font-semibold" : "text-[#6b6e8e]"}`}
@@ -427,7 +434,7 @@ export default function App() {
               key={id}
               onClick={() => setView(id)}
               className={`flex-1 flex flex-col items-center gap-1.5 pt-3 pb-6 text-xs font-medium ${
-                view === id ? "text-[#BFC9D1]" : "text-[#35395a]"
+                view === id ? "text-[#8494FF]" : "text-[#35395a]"
               }`}
             >
               <Icon on={view === id} />

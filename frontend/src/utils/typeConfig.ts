@@ -1,6 +1,6 @@
 export const TYPE_CFG: Record<string, { bg: string; text: string; accent: string }> = {
-  'หุ้น':                        { bg: 'bg-[#BFC9D1]/15',   text: 'text-[#BFC9D1]',   accent: '#BFC9D1' },
-  'กองทุน':                      { bg: 'bg-[#9BB4C0]/15',   text: 'text-[#9BB4C0]',   accent: '#9BB4C0' },
+  'หุ้น':                        { bg: 'bg-[#8494FF]/15',   text: 'text-[#8494FF]',   accent: '#8494FF' },
+  'กองทุน':                      { bg: 'bg-[#6367FF]/15',   text: 'text-[#6367FF]',   accent: '#6367FF' },
   'ประกัน':                      { bg: 'bg-amber-500/15',   text: 'text-amber-400',   accent: '#fbbf24' },
   'เงินสำรองฉุกเฉินส่วนตัว':     { bg: 'bg-emerald-500/15', text: 'text-emerald-400', accent: '#34d399' },
   'เงินสำรองฉุกเฉินกับแฟน':     { bg: 'bg-teal-500/15',    text: 'text-teal-400',    accent: '#2dd4bf' },

@@ -1,5 +1,5 @@
 export function PortfolioIcon({ on }: { on: boolean }) {
-  const c = on ? '#BFC9D1' : '#35395a'
+  const c = on ? '#8494FF' : '#35395a'
   return (
     <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
       <rect x="2"  y="10" width="4" height="8" rx="1" fill={c} />
@@ -10,7 +10,7 @@ export function PortfolioIcon({ on }: { on: boolean }) {
 }
 
 export function AnalyticsIcon({ on }: { on: boolean }) {
-  const c = on ? '#BFC9D1' : '#35395a'
+  const c = on ? '#8494FF' : '#35395a'
   return (
     <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
       <path d="M2 14 L6 9 L10 11.5 L14 5 L18 7" stroke={c} strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
